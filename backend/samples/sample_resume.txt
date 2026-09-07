@@ -1,0 +1,35 @@
+﻿Alex Chen
+San Francisco, CA | alex.chen@email.com | (555) 382-9102 | linkedin.com/in/alexchen-dev | github.com/alexchen-dev
+
+PROFESSIONAL SUMMARY
+Motivated Junior Software Engineer and Computer Science graduate with hands-on experience building full-stack web applications using React, Python, and modern web technologies. Passionate about API development, responsive UI design, and problem solving.
+
+EDUCATION
+University of California, Davis — B.S. in Computer Science (Graduated: May 2025)
+GPA: 3.75 / 4.0
+Relevant Coursework: Data Structures & Algorithms, Database Systems, Web Development, Software Engineering Principles, Computer Networks.
+
+TECHNICAL SKILLS
+- Languages: Python, JavaScript, HTML5, CSS3, SQL, C++
+- Frameworks & Libraries: React, FastAPI, Node.js, Express, Tailwind CSS
+- Databases: PostgreSQL, SQLite, MongoDB
+- Tools & DevOps: Git, GitHub, Docker, Postman, Linux, VS Code
+- Core Concepts: RESTful APIs, OOP, Responsive Design, Agile Methodology, Unit Testing
+
+PROJECTS
+DevConnect — Developer Community & Portfolio Platform (React, Node.js, PostgreSQL)
+- Developed a full-stack platform enabling developers to share code snippets, articles, and project showcases.
+- Implemented JWT authentication and role-based access control for 500+ active beta users.
+- Built reusable UI components with React and Tailwind CSS, improving lighthouse accessibility to 96.
+- Optimized PostgreSQL relational queries, decreasing query execution latency by 30%.
+
+TaskFlow — Real-Time Task Management Tool (Python, FastAPI, SQLite, React)
+- Architected RESTful backend with FastAPI handling task creation, tagging, and status updates.
+- Designed schema models with SQLAlchemy and integrated automated validation using Pydantic.
+- Packaged services into lightweight Docker containers for streamlined deployment.
+
+EXPERIENCE
+Software Engineering Intern — TechNova Solutions (Remote) | Jun 2024 – Sep 2024
+- Collaborated with a team of 4 engineers to build and maintain customer-facing web dashboard widgets.
+- Authored 25+ integration test cases with PyTest, increasing test suite coverage from 72% to 88%.
+- Participated in weekly agile sprints, code reviews, and backlog grooming sessions.
