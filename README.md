@@ -6,6 +6,9 @@ Built in structured sequential stages. This repository contains the fully implem
 > **Phase 1 Scope**: CV Upload → CV Parsing → AI Analysis (Gemini) → Skill Gap Matrix
 
 ---
+<img width="943" height="477" alt="Screenshot 2026-09-08 023605" src="https://github.com/user-attachments/assets/2fc52f25-9be7-4ae6-ba3a-58c83d0f4ddc" />
+
+
 
 ## 🌟 Features Implemented in Phase 1 (MVP)
 
