@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { User, Mail, Globe, ExternalLink, MapPin, Briefcase, GraduationCap, FolderGit2 } from 'lucide-react';
+import { Mail, Globe, ExternalLink, MapPin, Briefcase, GraduationCap, FolderGit2 } from 'lucide-react';
 
 export default function AnalysisOverview({ parsedResume, headline, summary }) {
   const info = parsedResume?.personal_info || {};

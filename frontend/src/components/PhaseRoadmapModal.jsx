@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { X, CheckCircle2, Circle, ArrowRight, Briefcase, Map, Mic, BarChart3, Globe } from 'lucide-react';
+import { X, CheckCircle2, Briefcase, Map, Mic, BarChart3, Globe } from 'lucide-react';
 
 export default function PhaseRoadmapModal({ isOpen, onClose }) {
   if (!isOpen) return null;

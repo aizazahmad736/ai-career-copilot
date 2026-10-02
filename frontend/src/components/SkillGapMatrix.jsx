@@ -1,5 +1,5 @@
 ﻿import React, { useState } from 'react';
-import { CheckCircle2, AlertTriangle, XCircle, Star, Filter } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, Star } from 'lucide-react';
 
 export default function SkillGapMatrix({
   matched = [],

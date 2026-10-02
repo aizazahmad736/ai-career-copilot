@@ -12,7 +12,7 @@ import RecommendationsView from './components/RecommendationsView';
 import JobMatchesView from './components/JobMatchesView';
 import PhaseRoadmapModal from './components/PhaseRoadmapModal';
 import { getSupportedRoles, checkBackendHealth, analyzeCV, analyzeSampleCV } from './services/api';
-import { RefreshCw, Sparkles, FileText, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { RefreshCw, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function App() {
   const [backendOnline, setBackendOnline] = useState(false);

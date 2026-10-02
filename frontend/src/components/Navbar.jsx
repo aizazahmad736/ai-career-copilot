@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { Sparkles, Key, CheckCircle2, AlertCircle, Compass } from 'lucide-react';
+import { Sparkles, Key } from 'lucide-react';
 
 export default function Navbar({ onOpenApiKeyModal, hasCustomKey, backendOnline }) {
   const phases = [

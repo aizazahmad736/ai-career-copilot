@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { CheckCircle2, AlertCircle, Sparkles, ArrowRight, Gauge } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Sparkles, Gauge } from 'lucide-react';
 
 export default function ATSFeedbackView({ atsFeedback }) {
   if (!atsFeedback) return null;
