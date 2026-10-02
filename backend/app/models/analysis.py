@@ -1,7 +1,6 @@
-﻿from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, Float, DateTime, ForeignKey, JSON
+﻿from sqlalchemy import Column, Integer, String, Text, Float, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
-from app.core.database import Base
+from app.core.database import Base, utcnow
 
 class ResumeAnalysis(Base):
     __tablename__ = "resume_analyses"
@@ -25,4 +24,4 @@ class ResumeAnalysis(Base):
     recommendations = Column(JSON, default=list)
     ats_feedback = Column(JSON, default=dict)
     
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)

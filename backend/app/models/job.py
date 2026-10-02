@@ -1,6 +1,5 @@
-from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, JSON
-from app.core.database import Base
+from app.core.database import Base, utcnow
 
 class JobSearch(Base):
     __tablename__ = "job_searches"
@@ -19,4 +18,4 @@ class JobSearch(Base):
     results = Column(JSON, default=list)
     is_demo_mode = Column(Boolean, default=False)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
