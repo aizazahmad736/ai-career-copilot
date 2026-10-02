@@ -1,11 +1,15 @@
-﻿# 🚀 AI Career Copilot — Phase 2: Job Search & Matching
+﻿# AI Career Copilot
 
-An AI-powered career co-pilot that helps students navigate from **CV → Skills → Jobs → Preparation → Interview**.
+An AI-powered career workspace that helps candidates move from **CV → Skills → Jobs → Preparation → Interview**.
 
-Built in structured sequential stages. This repository contains the implemented **Phase 1 — MVP** and **Phase 2 — Job Search & Matching**:
-> **Phase 1 Scope**: CV Upload → CV Parsing → AI Analysis (Gemini) → Skill Gap Matrix
+Implemented phases cover:
+> **Phase 1**: CV Upload → CV Parsing → AI Analysis (Gemini) → Skill Gap Matrix
 >
-> **Phase 2 Scope**: Live Job Search → Skill-Based Job Matching Engine → Ranked Opportunities
+> **Phase 2**: Live Job Search → Skill-Based Job Matching Engine → Ranked Opportunities
+>
+> **Phases 3–5**: Weekly Learning Plan → Mock Interviews → Dashboard, Resume Versions, Application Tracking
+
+Phase 6 includes production deployment configuration for Vercel, Render, and PostgreSQL. Publishing requires cloud accounts and the environment values described in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 <img width="943" height="477" alt="Screenshot 2026-09-08 023605" src="https://github.com/user-attachments/assets/2fc52f25-9be7-4ae6-ba3a-58c83d0f4ddc" />
@@ -73,6 +77,32 @@ Built in structured sequential stages. This repository contains the implemented 
 4. **🗄️ Search History**:
    - Every search run is stored in the `job_searches` table, linked to the CV analysis it came from.
 
+## 📚 Phase 3 — Personalized Learning Plan
+
+- Generate a 4, 6, 8, or 12-week plan from the selected resume analysis and its skill-gap recommendations.
+- Each week includes a skill focus, practice tasks, a portfolio checkpoint, estimated effort, and curated learning links.
+- Mark milestones complete and resume progress later.
+
+## 🎙️ Phase 4 — Mock Interview Practice
+
+- Start a technical, behavioral, or mixed interview tailored to the target role and extracted skills.
+- Submit typed answers or dictate them using supported browser speech recognition; questions can also be read aloud.
+- Get per-answer feedback and a rubric score. Gemini provides question generation and evaluation when configured; otherwise the app labels and uses a local heuristic rubric.
+- Interview sessions, answers, and scores are saved for later review.
+
+## 📈 Phase 5 — Dashboard, Resume Versions, Applications
+
+- Every CV analysis is saved as a version snapshot and can be reopened from the dashboard.
+- Track match-score history, recurring skill gaps, learning progress, interview outcomes, and job-search activity.
+- Save matching jobs to an application tracker and update their status: Saved, Applied, Interviewing, Offer, or Rejected.
+
+## 🔐 Accounts and Data
+
+- Local development is unauthenticated by default. Hosted configuration requires account sign-in and scopes resumes, plans, interviews, job searches, applications, and dashboard history to the signed-in account.
+- Passwords are stored as salted PBKDF2 hashes; account sessions use signed, expiring bearer tokens.
+- Resume text and interview answers are stored in the configured database. Use a private database, HTTPS, backups, and an appropriate retention policy for real candidate data.
+- Gemini and web-search keys entered in the browser are stored in browser local storage. Gemini may receive resume text and interview answers when enabled.
+
 ### Phase 2 API
 
 | Method | Endpoint | Description |
@@ -103,6 +133,7 @@ Example request body for `/api/v1/jobs/search`:
 - **AI**: Official Google Gemini API (`google-genai`)
 - **Job Data**: Remotive API, Arbeitnow API, optional Tavily / Serper web search (via `requests`)
 - **Database**: SQLite default for zero-config local development; switchable to PostgreSQL via `DATABASE_URL` in `.env`.
+- **Production**: PostgreSQL (`psycopg`), optional required account auth, Vercel static hosting, Render API hosting.
 
 ---
 
@@ -123,6 +154,7 @@ cd ai-career-copilot/backend
 # (Optional) Add web-search job sources in backend/.env:
 # TAVILY_API_KEY="tvly-..."
 # SERPER_API_KEY="..."
+# Local development keeps AUTH_REQUIRED=false. See backend/.env.example.
 
 # Run the FastAPI server:
 uvicorn app.main:app --reload --port 8000
@@ -144,13 +176,22 @@ npm run dev
 ```
 - Frontend will be live at: `http://localhost:5173`
 
+### Production Deployment
+
+Deployment templates are included in `render.yaml` and `frontend/vercel.json`. Follow [DEPLOYMENT.md](DEPLOYMENT.md) to provision PostgreSQL and the API, configure the Vercel API URL and Render CORS allowlist, set secrets, and verify the hosted login flow. The application is not automatically published by this repository.
+
+### CI
+
+GitHub Actions runs backend tests and frontend lint/build checks on pushes and pull requests.
+
 ---
 
 ## 🗺️ Sequential Roadmap
 
 - [x] **Phase 1 — MVP**: CV Upload → CV Parsing → AI Analysis → Skill Gap Analysis
 - [x] **Phase 2**: Job Search → Job Matching Engine (Tavily/Serper + Job APIs)
-- [ ] **Phase 3**: Personalized Learning Roadmap & Weekly Milestones
-- [ ] **Phase 4**: AI Mock Interviewer (Voice/Chat with Real-time Scoring)
-- [ ] **Phase 5**: Dashboard + Analytics & Resume Versioning
-- [ ] **Phase 6**: Public Deployment (Vercel + Render/Railway + PostgreSQL)
+- [x] **Phase 3**: Personalized Learning Roadmap & Weekly Milestones
+- [x] **Phase 4**: AI Mock Interviewer (Chat, browser voice support, per-answer scoring)
+- [x] **Phase 5**: Dashboard, Analytics, Resume Versioning & Application Tracking
+- [x] **Phase 6 preparation**: Vercel + Render + PostgreSQL deployment configuration
+- [ ] **Public launch**: Provision cloud accounts, set production secrets/domains, deploy, and complete a live smoke test
