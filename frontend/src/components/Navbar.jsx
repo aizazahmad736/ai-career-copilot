@@ -4,7 +4,7 @@ import { Sparkles, Key, CheckCircle2, AlertCircle, Compass } from 'lucide-react'
 export default function Navbar({ onOpenApiKeyModal, hasCustomKey, backendOnline }) {
   const phases = [
     { num: 1, name: 'CV & Skill Gap', active: true },
-    { num: 2, name: 'Job Matching', active: false },
+    { num: 2, name: 'Job Matching', active: true },
     { num: 3, name: 'Roadmap', active: false },
     { num: 4, name: 'AI Interview', active: false },
     { num: 5, name: 'Dashboard', active: false },
@@ -23,10 +23,10 @@ export default function Navbar({ onOpenApiKeyModal, hasCustomKey, backendOnline 
             <div className="flex items-center space-x-2">
               <span className="font-bold text-lg text-white tracking-tight">CareerCopilot</span>
               <span className="px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                Phase 1 MVP
+                Phase 2
               </span>
             </div>
-            <p className="text-xs text-slate-400 hidden sm:block">CV → Skills → Gap Analysis</p>
+            <p className="text-xs text-slate-400 hidden sm:block">CV → Skills → Gap Analysis → Jobs</p>
           </div>
         </div>
 

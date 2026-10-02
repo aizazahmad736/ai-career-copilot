@@ -76,7 +76,7 @@ export default function RecommendationsView({ recommendations = [], onNextPhase 
           <div>
             <h5 className="text-sm font-semibold text-white">Ready for the Next Stage?</h5>
             <p className="text-xs text-slate-400">
-              In Phase 2, CareerCopilot will use your matched skills to search & recommend targeted job and internship opportunities!
+              Use the Job Search & Matching Engine below to find live job and internship listings ranked against your skills.
             </p>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function RecommendationsView({ recommendations = [], onNextPhase 
           onClick={onNextPhase}
           className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs flex items-center space-x-2 transition-all shadow-lg shadow-indigo-600/30 flex-shrink-0"
         >
-          <span>Preview Phase 2 Roadmap</span>
+          <span>View Full Roadmap</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>

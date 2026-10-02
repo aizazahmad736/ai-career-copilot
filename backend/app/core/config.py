@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./career_copilot.db")
     GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY", os.getenv("GOOGLE_API_KEY", None))
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    # Optional web-search providers for the Phase 2 job search (free job APIs work without them)
+    TAVILY_API_KEY: Optional[str] = os.getenv("TAVILY_API_KEY", None)
+    SERPER_API_KEY: Optional[str] = os.getenv("SERPER_API_KEY", None)
     CORS_ORIGINS: List[str] = [
         "http://localhost:5173",
         "http://localhost:3000",

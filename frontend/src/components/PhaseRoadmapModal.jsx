@@ -7,7 +7,7 @@ export default function PhaseRoadmapModal({ isOpen, onClose }) {
   const phases = [
     {
       phase: 'Phase 1 — MVP',
-      status: 'Current / Complete',
+      status: 'Complete',
       title: 'CV Upload → Parsing → AI Analysis → Skill Gap',
       desc: 'Extract structured profile, categorize technical skills, benchmark against industry role expectations, and generate the match score and gap matrix.',
       icon: CheckCircle2,
@@ -16,16 +16,16 @@ export default function PhaseRoadmapModal({ isOpen, onClose }) {
     },
     {
       phase: 'Phase 2',
-      status: 'Up Next',
+      status: 'Current / Complete',
       title: 'Job Search → Job Matching Engine',
-      desc: 'Scrape and integrate live job/internship listings (Tavily/Serper + job APIs), rank opportunities by match score, and pinpoint specific role-fit delta.',
+      desc: 'Pull live job/internship listings (Remotive + Arbeitnow job APIs, optional Tavily/Serper web search), rank opportunities by match score, and pinpoint the skills you have and lack for each role.',
       icon: Briefcase,
-      active: false,
+      active: true,
       color: 'indigo'
     },
     {
       phase: 'Phase 3',
-      status: 'Planned',
+      status: 'Up Next',
       title: 'Personalized Learning Roadmap',
       desc: 'Generate interactive step-by-step learning schedules with curated resources, project benchmarks, and weekly milestones to close identified skill gaps.',
       icon: Map,
@@ -134,7 +134,7 @@ export default function PhaseRoadmapModal({ isOpen, onClose }) {
             onClick={onClose}
             className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition-colors"
           >
-            Got it, back to Phase 1 MVP
+            Got it, back to my results
           </button>
         </div>
       </div>

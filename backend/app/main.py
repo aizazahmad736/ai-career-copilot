@@ -30,7 +30,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 @app.get("/")
 def root():
     return {
-        "message": f"Welcome to {settings.PROJECT_NAME} API (Phase 1 MVP)",
+        "message": f"Welcome to {settings.PROJECT_NAME} API (Phase 2)",
         "docs": "/docs",
         "api_v1": settings.API_V1_STR
     }

@@ -1,9 +1,11 @@
-﻿# 🚀 AI Career Copilot — Phase 1: MVP
+﻿# 🚀 AI Career Copilot — Phase 2: Job Search & Matching
 
 An AI-powered career co-pilot that helps students navigate from **CV → Skills → Jobs → Preparation → Interview**.
 
-Built in structured sequential stages. This repository contains the fully implemented and verified **Phase 1 — MVP**:
+Built in structured sequential stages. This repository contains the implemented **Phase 1 — MVP** and **Phase 2 — Job Search & Matching**:
 > **Phase 1 Scope**: CV Upload → CV Parsing → AI Analysis (Gemini) → Skill Gap Matrix
+>
+> **Phase 2 Scope**: Live Job Search → Skill-Based Job Matching Engine → Ranked Opportunities
 
 ---
 <img width="943" height="477" alt="Screenshot 2026-09-08 023605" src="https://github.com/user-attachments/assets/2fc52f25-9be7-4ae6-ba3a-58c83d0f4ddc" />
@@ -47,12 +49,59 @@ Built in structured sequential stages. This repository contains the fully implem
 
 ---
 
+## 💼 Features Implemented in Phase 2 (Job Search & Matching)
+
+1. **🔎 Live Job Search**:
+   - Pulls real listings from the free **Remotive** and **Arbeitnow** job APIs — no API key needed.
+   - Optional web-search providers: set `TAVILY_API_KEY` and/or `SERPER_API_KEY` in `backend/.env` to add results from Tavily and Serper.
+   - Providers run in parallel; results are cached for 15 minutes to respect job-board rate limits.
+   - If no provider can be reached, the app falls back to clearly labelled sample listings instead of failing.
+
+2. **🧮 Job Matching Engine**:
+   - Extracts the technologies each listing names (90+ skills, alias-aware: `React.js` → React, `Postgres` → PostgreSQL, `k8s` → Kubernetes).
+   - Scores every job 0–100 against the skills extracted from your CV:
+     - **50%** skill coverage — how many of the listing's skills you already have.
+     - **35%** title relevance — how closely the job title fits your target role.
+     - **15%** seniority fit — penalises senior/lead roles for junior candidates.
+   - Labels each job **Strong Match**, **Good Match**, **Stretch**, or **Low Match**.
+
+3. **📋 Ranked Opportunities View**:
+   - Job cards sorted by match score with company, location, remote flag, salary (when published), and posting date.
+   - Per-job breakdown of the skills **you have** and the skills **to learn**.
+   - Filters for location and remote-only, plus a direct "View & Apply" link to the original listing.
+
+4. **🗄️ Search History**:
+   - Every search run is stored in the `job_searches` table, linked to the CV analysis it came from.
+
+### Phase 2 API
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/v1/jobs/search` | Search providers and return jobs ranked against the supplied skills |
+| `GET` | `/api/v1/jobs/sources` | List job sources and whether each is configured |
+
+Example request body for `/api/v1/jobs/search`:
+
+```json
+{
+  "skills": { "languages": ["Python", "JavaScript"], "frameworks": ["React", "FastAPI"] },
+  "target_role": "Junior Full Stack Developer",
+  "experience_level": "Entry-Level / Junior",
+  "location": "Europe",
+  "remote_only": false,
+  "limit": 20
+}
+```
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 19, Vite, Tailwind CSS v4, Lucide React
 - **Backend**: FastAPI, Uvicorn, Pydantic v2, SQLAlchemy ORM
 - **Document Parsing**: `pypdf`, `python-docx`
 - **AI**: Official Google Gemini API (`google-genai`)
+- **Job Data**: Remotive API, Arbeitnow API, optional Tavily / Serper web search (via `requests`)
 - **Database**: SQLite default for zero-config local development; switchable to PostgreSQL via `DATABASE_URL` in `.env`.
 
 ---
@@ -71,8 +120,15 @@ cd ai-career-copilot/backend
 # (Optional) Provide your Gemini API key in backend/.env:
 # GEMINI_API_KEY="AIzaSy..."
 
+# (Optional) Add web-search job sources in backend/.env:
+# TAVILY_API_KEY="tvly-..."
+# SERPER_API_KEY="..."
+
 # Run the FastAPI server:
 uvicorn app.main:app --reload --port 8000
+
+# Run the tests:
+python -m pytest tests
 ```
 - Backend API will be live at: `http://localhost:8000`
 - Interactive Swagger UI: `http://localhost:8000/docs`
@@ -93,7 +149,7 @@ npm run dev
 ## 🗺️ Sequential Roadmap
 
 - [x] **Phase 1 — MVP**: CV Upload → CV Parsing → AI Analysis → Skill Gap Analysis
-- [ ] **Phase 2**: Job Search → Job Matching Engine (Tavily/Serper + Job APIs)
+- [x] **Phase 2**: Job Search → Job Matching Engine (Tavily/Serper + Job APIs)
 - [ ] **Phase 3**: Personalized Learning Roadmap & Weekly Milestones
 - [ ] **Phase 4**: AI Mock Interviewer (Voice/Chat with Real-time Scoring)
 - [ ] **Phase 5**: Dashboard + Analytics & Resume Versioning

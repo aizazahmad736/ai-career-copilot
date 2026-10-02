@@ -8,6 +8,7 @@ def health_check():
     return {
         "status": "healthy",
         "service": settings.PROJECT_NAME,
-        "version": "1.0.0 (Phase 1 MVP)",
+        "version": "2.0.0 (Phase 2)",
         "gemini_configured": bool(settings.GEMINI_API_KEY),
+        "web_search_configured": bool(settings.TAVILY_API_KEY or settings.SERPER_API_KEY),
     }

@@ -44,6 +44,29 @@ export async function analyzeCV({ file, targetRole, experienceLevel, jobDescript
   return await res.json();
 }
 
+export async function searchJobs({ skills, targetRole, experienceLevel, location, remoteOnly, analysisId, limit = 20 }) {
+  const res = await fetch(`${API_BASE}/jobs/search`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      skills: skills || {},
+      target_role: targetRole,
+      experience_level: experienceLevel,
+      location: location || null,
+      remote_only: Boolean(remoteOnly),
+      analysis_id: analysisId ?? null,
+      limit,
+    }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(typeof errorData.detail === 'string' ? errorData.detail : 'Failed to search for jobs. Please try again.');
+  }
+
+  return await res.json();
+}
+
 export async function analyzeSampleCV({ targetRole, experienceLevel, customApiKey }) {
   const formData = new FormData();
   formData.append('target_role', targetRole);

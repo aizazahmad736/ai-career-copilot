@@ -9,6 +9,7 @@ import ExtractedSkillsView from './components/ExtractedSkillsView';
 import SkillGapMatrix from './components/SkillGapMatrix';
 import ATSFeedbackView from './components/ATSFeedbackView';
 import RecommendationsView from './components/RecommendationsView';
+import JobMatchesView from './components/JobMatchesView';
 import PhaseRoadmapModal from './components/PhaseRoadmapModal';
 import { getSupportedRoles, checkBackendHealth, analyzeCV, analyzeSampleCV } from './services/api';
 import { RefreshCw, Sparkles, FileText, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -160,13 +161,13 @@ export default function App() {
         <section className="text-center max-w-3xl mx-auto space-y-3 pt-4">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-semibold text-indigo-400">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>AI Career Copilot • Phase 1 MVP</span>
+            <span>AI Career Copilot • Phase 2</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
             Go From <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-blue-400 to-cyan-400">CV to Skills</span> to Career Success
           </h1>
           <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Upload your resume to extract competencies, benchmark against industry roles, calculate your readiness score, and discover exact skill gaps.
+            Upload your resume to extract competencies, benchmark against industry roles, discover exact skill gaps, and find live job listings ranked by how well they fit you.
           </p>
         </section>
 
@@ -272,13 +273,22 @@ export default function App() {
               recommendations={analysisResult.recommendations || []}
               onNextPhase={() => setIsRoadmapModalOpen(true)}
             />
+
+            {/* Phase 2: Job Search & Matching */}
+            <JobMatchesView
+              key={`${analysisResult.id}-${analysisResult.target_role}`}
+              skills={analysisResult.parsed_resume?.skills}
+              targetRole={analysisResult.target_role}
+              experienceLevel={analysisResult.experience_level}
+              analysisId={analysisResult.id === 999 ? undefined : analysisResult.id}
+            />
           </div>
         )}
       </main>
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 text-center text-xs text-slate-500">
-        <p>AI Career Copilot • Phase 1 MVP (CV Upload → Parsing → AI Analysis → Skill Gap)</p>
+        <p>AI Career Copilot • Phase 2 (CV Upload → Parsing → AI Analysis → Skill Gap → Job Search → Job Matching)</p>
       </footer>
     </div>
   );
