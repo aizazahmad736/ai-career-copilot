@@ -25,38 +25,38 @@ export default function PhaseRoadmapModal({ isOpen, onClose }) {
     },
     {
       phase: 'Phase 3',
-      status: 'Up Next',
+      status: 'Complete',
       title: 'Personalized Learning Roadmap',
       desc: 'Generate interactive step-by-step learning schedules with curated resources, project benchmarks, and weekly milestones to close identified skill gaps.',
       icon: Map,
-      active: false,
+      active: true,
       color: 'blue'
     },
     {
       phase: 'Phase 4',
-      status: 'Planned',
+      status: 'Complete',
       title: 'AI Mock Interviewer',
       desc: 'Interactive audio/chat mock interviews with role-specific behavioral and technical coding questions, followed by instant real-time feedback & scoring.',
       icon: Mic,
-      active: false,
+      active: true,
       color: 'purple'
     },
     {
       phase: 'Phase 5',
-      status: 'Planned',
+      status: 'Complete',
       title: 'Dashboard + Analytics',
       desc: 'Track candidate progression over time, interview performance analytics, resume versioning, and application tracking history.',
       icon: BarChart3,
-      active: false,
+      active: true,
       color: 'cyan'
     },
     {
       phase: 'Phase 6',
-      status: 'Planned',
+      status: 'Deployment ready',
       title: 'Public Cloud Deployment',
       desc: 'Production deployment architecture: Vercel frontend, Railway/Render backend, PostgreSQL database, and domain setup.',
       icon: Globe,
-      active: false,
+      active: true,
       color: 'sky'
     },
   ];

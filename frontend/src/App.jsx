@@ -9,9 +9,13 @@ import ExtractedSkillsView from './components/ExtractedSkillsView';
 import SkillGapMatrix from './components/SkillGapMatrix';
 import ATSFeedbackView from './components/ATSFeedbackView';
 import RecommendationsView from './components/RecommendationsView';
+import LearningPlanView from './components/LearningPlanView';
+import MockInterviewView from './components/MockInterviewView';
+import CareerDashboard from './components/CareerDashboard';
+import AuthScreen from './components/AuthScreen';
 import JobMatchesView from './components/JobMatchesView';
 import PhaseRoadmapModal from './components/PhaseRoadmapModal';
-import { getSupportedRoles, checkBackendHealth, analyzeCV, analyzeSampleCV } from './services/api';
+import { getSupportedRoles, checkBackendHealth, analyzeCV, analyzeSampleCV, getAuthConfig, getCurrentUser, clearAuthSession } from './services/api';
 import { RefreshCw, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function App() {
@@ -46,11 +50,33 @@ export default function App() {
   const [loadingStep, setLoadingStep] = useState('');
   const [error, setError] = useState(null);
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [activeView, setActiveView] = useState('workspace');
+  const [authChecked, setAuthChecked] = useState(false);
+  const [authRequired, setAuthRequired] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const resultsRef = useRef(null);
 
   useEffect(() => {
     async function init() {
+      try {
+        const authConfig = await getAuthConfig();
+        setAuthRequired(authConfig.auth_required);
+        if (!authConfig.auth_required) {
+          setAuthChecked(true);
+        } else if (localStorage.getItem('career_copilot_access_token')) {
+          try {
+            setCurrentUser(await getCurrentUser());
+          } catch {
+            clearAuthSession();
+          }
+          setAuthChecked(true);
+        } else {
+          setAuthChecked(true);
+        }
+      } catch {
+        setAuthChecked(true);
+      }
       const health = await checkBackendHealth();
       if (health) {
         setBackendOnline(true);
@@ -62,6 +88,13 @@ export default function App() {
     }
     init();
   }, []);
+
+  const handleLogout = () => {
+    clearAuthSession();
+    setCurrentUser(null);
+    setAnalysisResult(null);
+    setActiveView('workspace');
+  };
 
   const handleSaveApiKey = (key) => {
     setCustomApiKey(key);
@@ -152,10 +185,22 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  if (!authChecked) {
+    return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-300">Loading account settings...</div>;
+  }
+
+  if (authRequired && !currentUser) {
+    return <AuthScreen onAuthenticated={setCurrentUser} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500 selection:text-white pb-20">
       <Navbar
         onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
+        onOpenDashboard={() => setActiveView('dashboard')}
+        onLogout={authRequired ? handleLogout : undefined}
+        dashboardActive={activeView === 'dashboard'}
+        userEmail={currentUser?.email}
         hasCustomKey={Boolean(customApiKey || searchKeys.tavily || searchKeys.serper)}
         backendOnline={backendOnline}
       />
@@ -174,12 +219,36 @@ export default function App() {
         onClose={() => setIsRoadmapModalOpen(false)}
       />
 
+      {activeView === 'dashboard' ? (
+        <CareerDashboard
+          onReturn={() => setActiveView('workspace')}
+          onSelectVersion={(version) => {
+            setAnalysisResult({
+              id: version.analysis_id,
+              target_role: version.target_role,
+              experience_level: version.experience_level,
+              match_score: version.match_score,
+              candidate_name: version.candidate_name,
+              headline: version.headline,
+              summary: version.summary,
+              parsed_resume: version.parsed_resume,
+              matched_skills: version.matched_skills,
+              partial_skills: version.partial_skills,
+              missing_critical_skills: version.missing_critical_skills,
+              bonus_skills: version.bonus_skills,
+              recommendations: version.recommendations,
+              ats_feedback: version.ats_feedback,
+            });
+            setActiveView('workspace');
+          }}
+        />
+      ) : (
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
         {/* Hero Banner */}
         <section className="text-center max-w-3xl mx-auto space-y-3 pt-4">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-semibold text-indigo-400">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>AI Career Copilot • Phase 2</span>
+            <span>AI Career Copilot • Phases 1-6</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
             Go From <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-blue-400 to-cyan-400">CV to Skills</span> to Career Success
@@ -292,6 +361,14 @@ export default function App() {
               onNextPhase={() => setIsRoadmapModalOpen(true)}
             />
 
+              <LearningPlanView analysisId={analysisResult.id} />
+
+            <MockInterviewView
+              analysisId={analysisResult.id}
+              targetRole={analysisResult.target_role}
+              customApiKey={customApiKey}
+            />
+
             {/* Phase 2: Job Search & Matching */}
             <JobMatchesView
               key={`${analysisResult.id}-${analysisResult.target_role}`}
@@ -305,10 +382,11 @@ export default function App() {
           </div>
         )}
       </main>
+      )}
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 text-center text-xs text-slate-500">
-        <p>AI Career Copilot • Phase 2 (CV Upload → Parsing → AI Analysis → Skill Gap → Job Search → Job Matching)</p>
+        <p>AI Career Copilot • Resume Analysis → Learning Plan → Interview Practice → Job Search → Progress Tracking</p>
       </footer>
     </div>
   );

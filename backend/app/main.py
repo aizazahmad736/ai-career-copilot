@@ -1,11 +1,18 @@
 ﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.core.database import Base, engine
+from app.core.database import Base, engine, migrate_account_columns
 from app.api.v1.api import api_router
+
+if settings.AUTH_REQUIRED:
+    if settings.AUTH_SECRET == "local-development-only-change-me" or len(settings.AUTH_SECRET) < 32:
+        raise RuntimeError("Set a unique AUTH_SECRET of at least 32 characters before requiring authentication.")
+    if "*" in settings.CORS_ORIGINS:
+        raise RuntimeError("Wildcard CORS origins are not allowed when authentication is required.")
 
 # Initialize database schema tables
 Base.metadata.create_all(bind=engine)
+migrate_account_columns()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

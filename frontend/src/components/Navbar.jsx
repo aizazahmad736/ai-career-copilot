@@ -1,13 +1,13 @@
 ﻿import React from 'react';
 import { Sparkles, Key } from 'lucide-react';
 
-export default function Navbar({ onOpenApiKeyModal, hasCustomKey, backendOnline }) {
+export default function Navbar({ onOpenApiKeyModal, onOpenDashboard, onLogout, dashboardActive, userEmail, hasCustomKey, backendOnline }) {
   const phases = [
     { num: 1, name: 'CV & Skill Gap', active: true },
     { num: 2, name: 'Job Matching', active: true },
-    { num: 3, name: 'Roadmap', active: false },
-    { num: 4, name: 'AI Interview', active: false },
-    { num: 5, name: 'Dashboard', active: false },
+    { num: 3, name: 'Roadmap', active: true },
+    { num: 4, name: 'AI Interview', active: true },
+    { num: 5, name: 'Dashboard', active: true },
   ];
 
   return (
@@ -23,7 +23,7 @@ export default function Navbar({ onOpenApiKeyModal, hasCustomKey, backendOnline 
             <div className="flex items-center space-x-2">
               <span className="font-bold text-lg text-white tracking-tight">CareerCopilot</span>
               <span className="px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                Phase 2
+                Phases 1-6
               </span>
             </div>
             <p className="text-xs text-slate-400 hidden sm:block">CV → Skills → Gap Analysis → Jobs</p>
@@ -32,22 +32,21 @@ export default function Navbar({ onOpenApiKeyModal, hasCustomKey, backendOnline 
 
         {/* Phase Pills */}
         <nav className="hidden md:flex items-center space-x-1.5 p-1 bg-slate-900/60 border border-slate-800 rounded-full text-xs">
-          {phases.map((p) => (
-            <div
-              key={p.num}
-              className={`px-3 py-1 rounded-full font-medium transition-all ${
-                p.active
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/50'
-                  : 'text-slate-400 hover:text-slate-300 opacity-60'
-              }`}
-            >
-              <span>P{p.num}: {p.name}</span>
+          {phases.map((p) => p.num === 5 ? (
+            <button key={p.num} onClick={onOpenDashboard} className={`px-3 py-1 rounded-full font-medium transition-all ${dashboardActive ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}>
+              P{p.num}: {p.name}
+            </button>
+          ) : (
+            <div key={p.num} className={`px-3 py-1 rounded-full font-medium ${p.active ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/50' : 'text-slate-400 opacity-60'}`}>
+              P{p.num}: {p.name}
             </div>
           ))}
         </nav>
 
         {/* Right Actions */}
         <div className="flex items-center space-x-3">
+          {userEmail && <span className="hidden xl:block max-w-40 truncate text-xs text-slate-400">{userEmail}</span>}
+          {onLogout && <button onClick={onLogout} className="text-xs text-slate-400 hover:text-white">Sign out</button>}
           <div className="hidden sm:flex items-center space-x-1.5 text-xs text-slate-400">
             <div className={`w-2 h-2 rounded-full ${backendOnline ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50' : 'bg-amber-400 animate-ping'}`} />
             <span>{backendOnline ? 'Backend Connected' : 'Connecting...'}</span>
