@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.database import get_db
 from app.models.analysis import ResumeAnalysis
 from app.models.job import JobSearch
+from app.models.user import User
+from app.api.v1.endpoints.auth import get_current_user
 from app.schemas.job import JobSearchRequest, JobSearchResponse
 from app.services.job_search_service import job_search_service
 from app.services.job_matching_service import job_matching_service
@@ -23,7 +25,17 @@ def get_job_sources():
     }
 
 @router.post("/search", response_model=JobSearchResponse)
-def search_jobs(payload: JobSearchRequest, db: Session = Depends(get_db)):
+def search_jobs(
+    payload: JobSearchRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    analysis_id = payload.analysis_id
+    if analysis_id is not None:
+        analysis = db.get(ResumeAnalysis, analysis_id)
+        if analysis is None or (user is not None and analysis.user_id != user.id):
+            raise HTTPException(status_code=404, detail="Resume analysis not found")
+
     # 1. Collect listings from every configured provider
     raw_jobs, sources_used, source_errors, query, is_demo_mode = job_search_service.search(
         target_role=payload.target_role,
@@ -45,11 +57,8 @@ def search_jobs(payload: JobSearchRequest, db: Session = Depends(get_db)):
     )
 
     # 3. Persist the search run (only link an analysis that actually exists)
-    analysis_id = payload.analysis_id
-    if analysis_id is not None and db.get(ResumeAnalysis, analysis_id) is None:
-        analysis_id = None
-
     search_record = JobSearch(
+        user_id=user.id if user else None,
         analysis_id=analysis_id,
         target_role=payload.target_role,
         experience_level=payload.experience_level,

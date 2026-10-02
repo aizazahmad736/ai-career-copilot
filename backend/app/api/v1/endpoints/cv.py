@@ -5,7 +5,10 @@ import os
 
 from app.core.database import get_db
 from app.models.resume import Resume
+from app.models.user import User
+from app.api.v1.endpoints.auth import get_current_user
 from app.models.analysis import ResumeAnalysis
+from app.models.resume_version import ResumeVersion
 from app.schemas.analysis import SkillGapAnalysisResponse, ATSFeedback, SkillMatchItem, ActionableRecommendation
 from app.schemas.resume import ParsedResumeData, PersonalInfo, CategorizedSkills, WorkExperience, EducationItem, ProjectItem
 from app.services.parser_service import parser_service
@@ -33,7 +36,8 @@ async def analyze_cv(
     target_experience_level: str = Form("Entry-Level / Junior"),
     job_description: Optional[str] = Form(None),
     custom_gemini_api_key: Optional[str] = Form(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: Optional[User] = Depends(get_current_user),
 ):
     # 1. Read file bytes
     try:
@@ -57,7 +61,8 @@ async def analyze_cv(
         filename=file.filename or "resume",
         file_type=file_type,
         file_size_bytes=len(contents),
-        raw_text=raw_text
+        raw_text=raw_text,
+        user_id=user.id if user else None,
     )
     db.add(resume_record)
     db.commit()
@@ -83,6 +88,7 @@ async def analyze_cv(
 
     analysis_record = ResumeAnalysis(
         resume_id=resume_record.id,
+        user_id=user.id if user else None,
         target_role=target_role,
         experience_level=target_experience_level,
         match_score=match_score,
@@ -113,6 +119,16 @@ async def analyze_cv(
         projects=[ProjectItem(**proj) for proj in ai_result.get("projects", [])],
         certifications=ai_result.get("certifications", [])
     )
+
+    version_query = db.query(Resume).filter_by(filename=resume_record.filename)
+    version_query = version_query.filter(Resume.user_id == user.id) if user else version_query.filter(Resume.user_id.is_(None))
+    version_number = version_query.count()
+    db.add(ResumeVersion(
+        analysis_id=analysis_record.id,
+        version_number=version_number,
+        parsed_data=parsed_resume.model_dump(),
+    ))
+    db.commit()
 
     ats_fb = ai_result.get("ats_feedback", {})
     ats_feedback_obj = ATSFeedback(
@@ -148,14 +164,26 @@ async def analyze_sample_resume(
     target_experience_level: str = Form("Entry-Level / Junior"),
     job_description: Optional[str] = Form(None),
     custom_gemini_api_key: Optional[str] = Form(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: Optional[User] = Depends(get_current_user),
 ):
-    sample_path = os.path.join(os.path.dirname(__file__), "../../../samples/sample_resume.txt")
+    sample_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../samples/sample_resume.txt"))
     if os.path.exists(sample_path):
         with open(sample_path, "r", encoding="utf-8") as f:
             raw_text = f.read()
     else:
         raw_text = "Alex Chen\nalex.chen@email.com\nSkills: Python, JavaScript, React, FastAPI, PostgreSQL, Git, Docker"
+
+    resume_record = Resume(
+        filename="sample_resume.txt",
+        file_type="txt",
+        file_size_bytes=len(raw_text.encode("utf-8")),
+        raw_text=raw_text,
+        user_id=user.id if user else None,
+    )
+    db.add(resume_record)
+    db.commit()
+    db.refresh(resume_record)
 
     # AI Analysis
     ai_result = gemini_service.analyze_resume_text(raw_text, custom_api_key=custom_gemini_api_key)
@@ -192,8 +220,39 @@ async def analyze_sample_resume(
         actionable_bullet_fixes=ats_fb.get("actionable_bullet_fixes", [])
     )
 
+    analysis_record = ResumeAnalysis(
+        resume_id=resume_record.id,
+        user_id=user.id if user else None,
+        target_role=target_role,
+        experience_level=target_experience_level,
+        match_score=match_score,
+        candidate_name=candidate_name,
+        candidate_email=personal_info.get("email"),
+        headline=ai_result.get("professional_headline"),
+        summary=ai_result.get("executive_summary"),
+        extracted_skills=skills_data,
+        matched_skills=[item.model_dump() for item in matched],
+        partial_skills=[item.model_dump() for item in partial],
+        missing_skills=[item.model_dump() for item in missing],
+        bonus_skills=[item.model_dump() for item in bonus],
+        recommendations=[item.model_dump() for item in recommendations],
+        ats_feedback=ats_fb,
+    )
+    db.add(analysis_record)
+    db.commit()
+    db.refresh(analysis_record)
+    version_query = db.query(Resume).filter_by(filename=resume_record.filename)
+    version_query = version_query.filter(Resume.user_id == user.id) if user else version_query.filter(Resume.user_id.is_(None))
+    version_number = version_query.count()
+    db.add(ResumeVersion(
+        analysis_id=analysis_record.id,
+        version_number=version_number,
+        parsed_data=parsed_resume.model_dump(),
+    ))
+    db.commit()
+
     return SkillGapAnalysisResponse(
-        id=999,
+        id=analysis_record.id,
         target_role=target_role,
         experience_level=target_experience_level,
         match_score=match_score,

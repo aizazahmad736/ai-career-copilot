@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Briefcase, MapPin, Search, ExternalLink, Building2, Clock, Wifi, AlertCircle, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
-import { searchJobs } from '../services/api';
+import React, { useEffect, useState } from 'react';
+import { Briefcase, MapPin, Search, ExternalLink, Building2, Clock, Wifi, AlertCircle, CheckCircle2, XCircle, Loader2, BookmarkPlus, BookmarkCheck } from 'lucide-react';
+import { getApplications, saveApplication, searchJobs, updateApplicationStatus } from '../services/api';
 
 const FIT_STYLES = {
   'Strong Match': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -26,6 +26,41 @@ export default function JobMatchesView({ skills, targetRole, experienceLevel, an
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
+  const [applications, setApplications] = useState({});
+
+  useEffect(() => {
+    let active = true;
+    getApplications().then((items) => {
+      if (active) setApplications(Object.fromEntries(items.map((item) => [item.job_key, item])));
+    }).catch(() => {});
+    return () => { active = false; };
+  }, []);
+
+  const handleTrack = async (job) => {
+    setError(null);
+    try {
+      const application = await saveApplication({
+        jobKey: `${job.source}:${job.id}`,
+        analysisId,
+        targetRole,
+        title: job.title,
+        company: job.company,
+        url: job.url,
+      });
+      setApplications((current) => ({ ...current, [application.job_key]: application }));
+    } catch (err) {
+      setError(err.message || 'Failed to track this job.');
+    }
+  };
+
+  const handleStatusChange = async (application, status) => {
+    try {
+      const updated = await updateApplicationStatus(application.id, status);
+      setApplications((current) => ({ ...current, [updated.job_key]: updated }));
+    } catch (err) {
+      setError(err.message || 'Failed to update application status.');
+    }
+  };
 
   const handleSearch = async () => {
     setError(null);
@@ -222,17 +257,21 @@ export default function JobMatchesView({ skills, targetRole, experienceLevel, an
                   <p className="text-xs text-slate-500 leading-relaxed">{job.description_snippet}</p>
                 )}
 
-                <div className="flex items-center justify-between pt-1">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
                   <span className="text-[11px] text-slate-500">via {job.source}</span>
-                  <a
-                    href={job.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors"
-                  >
-                    <span>{job.source === 'Sample' ? 'Search this title' : 'View & Apply'}</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {applications[`${job.source}:${job.id}`] ? (
+                      <select value={applications[`${job.source}:${job.id}`].status} onChange={(event) => handleStatusChange(applications[`${job.source}:${job.id}`], event.target.value)} aria-label={`Application status for ${job.title}`} className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-cyan-200">
+                        {['saved', 'applied', 'interviewing', 'offer', 'rejected'].map((status) => <option key={status} value={status}>{status[0].toUpperCase() + status.slice(1)}</option>)}
+                      </select>
+                    ) : (
+                      <button onClick={() => handleTrack(job)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-cyan-700 text-xs text-cyan-200 hover:bg-cyan-950/50"><BookmarkPlus className="w-3.5 h-3.5" />Track</button>
+                    )}
+                    {applications[`${job.source}:${job.id}`] && <BookmarkCheck className="w-4 h-4 text-cyan-300" aria-label="Tracked" />}
+                    <a href={job.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors">
+                      <span>{job.source === 'Sample' ? 'Search this title' : 'View & Apply'}</span><ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
                 </div>
               </div>
             );

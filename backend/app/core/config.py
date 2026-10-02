@@ -13,12 +13,13 @@ class Settings(BaseSettings):
     # Optional web-search providers for the Phase 2 job search (free job APIs work without them)
     TAVILY_API_KEY: Optional[str] = os.getenv("TAVILY_API_KEY", None)
     SERPER_API_KEY: Optional[str] = os.getenv("SERPER_API_KEY", None)
+    AUTH_REQUIRED: bool = os.getenv("AUTH_REQUIRED", "false").lower() == "true"
+    AUTH_SECRET: str = os.getenv("AUTH_SECRET", "local-development-only-change-me")
     CORS_ORIGINS: List[str] = [
         "http://localhost:5173",
         "http://localhost:3000",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
-        "*",
     ]
 
 settings = Settings()
