@@ -34,6 +34,11 @@ export default function App() {
     return localStorage.getItem('career_copilot_gemini_key') || '';
   });
 
+  const [searchKeys, setSearchKeys] = useState(() => ({
+    tavily: localStorage.getItem('career_copilot_tavily_key') || '',
+    serper: localStorage.getItem('career_copilot_serper_key') || '',
+  }));
+
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
 
@@ -64,6 +69,17 @@ export default function App() {
       localStorage.setItem('career_copilot_gemini_key', key);
     } else {
       localStorage.removeItem('career_copilot_gemini_key');
+    }
+  };
+
+  const handleSaveSearchKeys = (keys) => {
+    setSearchKeys(keys);
+    for (const [name, value] of Object.entries(keys)) {
+      if (value) {
+        localStorage.setItem(`career_copilot_${name}_key`, value);
+      } else {
+        localStorage.removeItem(`career_copilot_${name}_key`);
+      }
     }
   };
 
@@ -140,7 +156,7 @@ export default function App() {
     <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500 selection:text-white pb-20">
       <Navbar
         onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
-        hasCustomKey={Boolean(customApiKey)}
+        hasCustomKey={Boolean(customApiKey || searchKeys.tavily || searchKeys.serper)}
         backendOnline={backendOnline}
       />
 
@@ -149,6 +165,8 @@ export default function App() {
         onClose={() => setIsApiKeyModalOpen(false)}
         currentKey={customApiKey}
         onSaveKey={handleSaveApiKey}
+        currentSearchKeys={searchKeys}
+        onSaveSearchKeys={handleSaveSearchKeys}
       />
 
       <PhaseRoadmapModal
@@ -281,6 +299,8 @@ export default function App() {
               targetRole={analysisResult.target_role}
               experienceLevel={analysisResult.experience_level}
               analysisId={analysisResult.id === 999 ? undefined : analysisResult.id}
+              tavilyApiKey={searchKeys.tavily}
+              serperApiKey={searchKeys.serper}
             />
           </div>
         )}

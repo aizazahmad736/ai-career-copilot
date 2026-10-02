@@ -62,7 +62,7 @@ export default function Navbar({ onOpenApiKeyModal, hasCustomKey, backendOnline 
             }`}
           >
             <Key className="w-3.5 h-3.5" />
-            <span>{hasCustomKey ? 'Gemini Key Configured' : 'Gemini API Key'}</span>
+            <span>{hasCustomKey ? 'API Keys Configured' : 'API Keys'}</span>
           </button>
         </div>
       </div>

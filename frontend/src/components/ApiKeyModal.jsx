@@ -1,14 +1,17 @@
 ﻿import React, { useState } from 'react';
 import { Key, ExternalLink, X, Check } from 'lucide-react';
 
-export default function ApiKeyModal({ isOpen, onClose, currentKey, onSaveKey }) {
+export default function ApiKeyModal({ isOpen, onClose, currentKey, onSaveKey, currentSearchKeys, onSaveSearchKeys }) {
   const [apiKey, setApiKey] = useState(currentKey || '');
+  const [tavilyKey, setTavilyKey] = useState(currentSearchKeys?.tavily || '');
+  const [serperKey, setSerperKey] = useState(currentSearchKeys?.serper || '');
   const [saved, setSaved] = useState(false);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
     onSaveKey(apiKey.trim());
+    onSaveSearchKeys({ tavily: tavilyKey.trim(), serper: serperKey.trim() });
     setSaved(true);
     setTimeout(() => {
       setSaved(false);
@@ -18,12 +21,15 @@ export default function ApiKeyModal({ isOpen, onClose, currentKey, onSaveKey }) 
 
   const handleClear = () => {
     setApiKey('');
+    setTavilyKey('');
+    setSerperKey('');
     onSaveKey('');
+    onSaveSearchKeys({ tavily: '', serper: '' });
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative text-slate-100">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative text-slate-100 max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
@@ -36,8 +42,8 @@ export default function ApiKeyModal({ isOpen, onClose, currentKey, onSaveKey }) 
             <Key className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-semibold text-white">Google Gemini API Key</h3>
-            <p className="text-xs text-slate-400">Optional: Use your own key for live AI analysis</p>
+            <h3 className="text-base font-semibold text-white">API Keys</h3>
+            <p className="text-xs text-slate-400">Optional: Use your own keys for live AI analysis and wider job search</p>
           </div>
         </div>
 
@@ -71,13 +77,48 @@ export default function ApiKeyModal({ isOpen, onClose, currentKey, onSaveKey }) 
             </a>
           </div>
 
+          <div className="pt-3 border-t border-slate-800 space-y-3">
+            <div>
+              <p className="text-xs font-medium text-slate-300">Job Search Sources</p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Remotive and Arbeitnow work without a key. Add either key below to also pull listings from web search.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                Tavily API Key
+              </label>
+              <input
+                type="password"
+                value={tavilyKey}
+                onChange={(e) => setTavilyKey(e.target.value)}
+                placeholder="tvly-..."
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                Serper API Key
+              </label>
+              <input
+                type="password"
+                value={serperKey}
+                onChange={(e) => setSerperKey(e.target.value)}
+                placeholder="Serper key"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-mono"
+              />
+            </div>
+          </div>
+
           <div className="flex items-center justify-between pt-2">
-            {apiKey ? (
+            {apiKey || tavilyKey || serperKey ? (
               <button
                 onClick={handleClear}
                 className="text-xs text-red-400 hover:text-red-300 hover:underline"
               >
-                Clear Key
+                Clear Keys
               </button>
             ) : <div />}
 
@@ -98,7 +139,7 @@ export default function ApiKeyModal({ isOpen, onClose, currentKey, onSaveKey }) 
                     <span>Saved!</span>
                   </>
                 ) : (
-                  <span>Save Key</span>
+                  <span>Save Keys</span>
                 )}
               </button>
             </div>
