@@ -20,7 +20,7 @@ function formatPostedDate(value) {
   return `Posted ${date.toLocaleDateString()}`;
 }
 
-export default function JobMatchesView({ skills, targetRole, experienceLevel, analysisId }) {
+export default function JobMatchesView({ skills, targetRole, experienceLevel, analysisId, tavilyApiKey, serperApiKey }) {
   const [location, setLocation] = useState('');
   const [remoteOnly, setRemoteOnly] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,6 +38,8 @@ export default function JobMatchesView({ skills, targetRole, experienceLevel, an
         location: location.trim() || undefined,
         remoteOnly,
         analysisId,
+        tavilyApiKey: tavilyApiKey || undefined,
+        serperApiKey: serperApiKey || undefined,
       });
       setResult(res);
     } catch (err) {

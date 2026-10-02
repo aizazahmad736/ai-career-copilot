@@ -44,7 +44,7 @@ export async function analyzeCV({ file, targetRole, experienceLevel, jobDescript
   return await res.json();
 }
 
-export async function searchJobs({ skills, targetRole, experienceLevel, location, remoteOnly, analysisId, limit = 20 }) {
+export async function searchJobs({ skills, targetRole, experienceLevel, location, remoteOnly, analysisId, tavilyApiKey, serperApiKey, limit = 20 }) {
   const res = await fetch(`${API_BASE}/jobs/search`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -55,6 +55,8 @@ export async function searchJobs({ skills, targetRole, experienceLevel, location
       location: location || null,
       remote_only: Boolean(remoteOnly),
       analysis_id: analysisId ?? null,
+      tavily_api_key: tavilyApiKey || null,
+      serper_api_key: serperApiKey || null,
       limit,
     }),
   });
