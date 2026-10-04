@@ -81,7 +81,7 @@ export default function ApiKeyModal({ isOpen, onClose, currentKey, onSaveKey, cu
             <div>
               <p className="text-xs font-medium text-slate-300">Job Search Sources</p>
               <p className="text-xs text-slate-400 mt-0.5">
-                Remotive and Arbeitnow work without a key. Add either key below to also pull listings from web search.
+                Remotive and Arbeitnow work without a key. Add either key below to search the web for roles matching your CV skills too.
               </p>
             </div>
 

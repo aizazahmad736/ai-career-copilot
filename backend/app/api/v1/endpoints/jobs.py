@@ -43,6 +43,7 @@ def search_jobs(
         location=payload.location,
         tavily_api_key=payload.tavily_api_key,
         serper_api_key=payload.serper_api_key,
+        skills=payload.skills,
     )
 
     # 2. Score and rank against the candidate's skills

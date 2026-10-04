@@ -207,9 +207,33 @@ class JobSearchService:
         return jobs
 
     @staticmethod
-    def _web_query(query: str, experience_level: str, location: Optional[str]) -> str:
+    def _web_query(
+        query: str,
+        experience_level: str,
+        location: Optional[str],
+        skills: Optional[Dict[str, List[str]]] = None,
+    ) -> str:
         level = "internship" if "intern" in experience_level.lower() else "junior"
-        return f"{level} {query} jobs {location or 'remote'} apply"
+        candidate_skills = []
+        seen_skills = set()
+        for category, values in (skills or {}).items():
+            if category.lower().replace(" ", "_") == "soft_skills" or not isinstance(values, list):
+                continue
+            for value in values:
+                if not isinstance(value, str):
+                    continue
+                skill = value.strip()
+                normalized_skill = skill.casefold()
+                if skill and normalized_skill not in seen_skills:
+                    candidate_skills.append(skill)
+                    seen_skills.add(normalized_skill)
+                if len(candidate_skills) == 4:
+                    break
+            if len(candidate_skills) == 4:
+                break
+
+        terms = [level, query, "jobs", *candidate_skills, location or "remote", "apply"]
+        return " ".join(terms)
 
     @staticmethod
     def _web_result_to_job(source: str, title: str, url: str, snippet: str) -> Dict[str, Any]:
@@ -278,10 +302,11 @@ class JobSearchService:
         location: Optional[str] = None,
         tavily_api_key: Optional[str] = None,
         serper_api_key: Optional[str] = None,
+        skills: Optional[Dict[str, List[str]]] = None,
     ) -> Tuple[List[Dict[str, Any]], List[str], Dict[str, str], str, bool]:
         """Returns (jobs, sources_used, source_errors, query, is_demo_mode)."""
         query = self.build_query(target_role)
-        web_query = self._web_query(query, experience_level, location)
+        web_query = self._web_query(query, experience_level, location, skills)
         tavily_key = tavily_api_key or settings.TAVILY_API_KEY
         serper_key = serper_api_key or settings.SERPER_API_KEY
 

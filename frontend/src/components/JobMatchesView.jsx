@@ -100,7 +100,7 @@ export default function JobMatchesView({ skills, targetRole, experienceLevel, an
             </span>
           </h3>
           <p className="text-xs text-slate-400">
-            Live listings ranked against the skills extracted from your CV for <strong className="text-indigo-300">{targetRole}</strong>.
+            Search job boards and the web using your CV skills, then rank listings for <strong className="text-indigo-300">{targetRole}</strong>.
           </p>
         </div>
       </div>
@@ -135,7 +135,7 @@ export default function JobMatchesView({ skills, targetRole, experienceLevel, an
           className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium text-xs flex items-center justify-center space-x-2 transition-all shadow-lg shadow-indigo-600/30 flex-shrink-0"
         >
           {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
-          <span>{loading ? 'Searching job boards...' : result ? 'Search Again' : 'Find Matching Jobs'}</span>
+          <span>{loading ? 'Searching job boards and web...' : result ? 'Search Again' : 'Find Matching Jobs'}</span>
         </button>
       </div>
 

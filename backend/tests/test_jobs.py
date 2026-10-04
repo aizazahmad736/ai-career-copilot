@@ -75,6 +75,42 @@ def test_build_query():
     assert job_search_service.build_query("Frontend Developer") == "frontend developer"
     assert job_search_service.build_query("Junior Mobile Developer") == "mobile developer"
 
+def test_web_query_uses_candidate_technical_skills_and_location():
+    query = job_search_service._web_query(
+        "full stack developer",
+        "Entry-Level / Junior",
+        "Berlin",
+        CANDIDATE_SKILLS,
+    )
+    assert query == "junior full stack developer jobs Python JavaScript SQL React.js Berlin apply"
+    assert "Communication" not in query
+
+def test_web_provider_receives_cv_personalized_query(monkeypatch):
+    job_search_service._cache.clear()
+    observed_queries = []
+    monkeypatch.setattr(job_search_service, "_fetch_remotive", lambda query: [])
+    monkeypatch.setattr(job_search_service, "_fetch_arbeitnow", lambda: [])
+
+    def fetch_tavily(query, api_key):
+        observed_queries.append((query, api_key))
+        return [make_job("web-1", "Junior Full Stack Developer", "React and Python")]
+
+    monkeypatch.setattr(job_search_service, "_fetch_tavily", fetch_tavily)
+    jobs, sources, errors, _, demo_mode = job_search_service.search(
+        target_role="Junior Full Stack Developer",
+        location="Berlin",
+        tavily_api_key="test-key",
+        skills=CANDIDATE_SKILLS,
+    )
+
+    assert observed_queries == [
+        ("junior full stack developer jobs Python JavaScript SQL React.js Berlin apply", "test-key")
+    ]
+    assert len(jobs) == 1
+    assert sources == ["Tavily"]
+    assert errors == {}
+    assert demo_mode is False
+
 def test_rank_jobs_orders_and_filters():
     matches, total = job_matching_service.rank_jobs(FAKE_JOBS, CANDIDATE_SKILLS, "Junior Full Stack Developer")
     titles = [m.title for m in matches]

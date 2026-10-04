@@ -57,7 +57,7 @@ Phase 6 includes production deployment configuration for Vercel, Render, and Pos
 
 1. **🔎 Live Job Search**:
    - Pulls real listings from the free **Remotive** and **Arbeitnow** job APIs — no API key needed.
-   - Optional web-search providers: add a Tavily and/or Serper key to include web-search results. Enter them in the app's **API Keys** dialog (stored in your browser only), or set `TAVILY_API_KEY` / `SERPER_API_KEY` in `backend/.env`.
+   - Optional web-search providers: add a Tavily and/or Serper key to search the web for roles using your target role, location, and technical skills extracted from your CV. Results are ranked against your CV skills. Enter keys in the app's **API Keys** dialog (stored in your browser only), or set `TAVILY_API_KEY` / `SERPER_API_KEY` in `backend/.env`.
    - Providers run in parallel; results are cached for 15 minutes to respect job-board rate limits.
    - If no provider can be reached, the app falls back to clearly labelled sample listings instead of failing.
 
